@@ -1,7 +1,6 @@
 require_relative 'setup'
 require_relative 'change'
 require_relative 'results'
-require 'byebug'
 
 setup = Setup.new
 total_change = setup.get_total_change
