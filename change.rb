@@ -1,5 +1,3 @@
-require 'byebug'
-
 class Teller
   attr_accessor :denomination, :money, :money_left, :multiplier_used, :combinations, :result,
 
@@ -12,16 +10,16 @@ class Teller
     self.result = []
   end
 
-  def make_change(money, denomination = [])
-    self.denomination = denomination
-    self.money = money
+  def make_change(**opts)
+    self.denomination = opts.fetch(:denomination,[1])
+    self.money = opts.fetch(:money,1)
     self.money_left = money
     fail(StandardError, 'Money cannot be less that 0') if (money < 0)
     multiply_out_decimals
     combinations_array
     results_array
     divide_back_to_decimals
-    display_results
+    result
   end
 
   private
@@ -74,14 +72,4 @@ class Teller
       self.result.map! { |item| item /(10 ** decimal_point)}
     end
   end
-
-  def display_results
-    puts "change from #{money}:"
-    puts "#{result}"
-  end
-
 end
-
-coins = Teller.new
-
-coins.make_change(14, [10, 7, 1])
