@@ -1,3 +1,5 @@
+require 'byebug'
+
 class Teller
   attr_accessor :denomination, :money, :money_left, :multiplier_used, :combinations, :result,
 
@@ -11,7 +13,9 @@ class Teller
   end
 
   def make_change(money, denomination = [])
-    money_left = money
+    self.denomination = denomination
+    self.money = money
+    self.money_left = money
     fail(StandardError, 'Money cannot be less that 0') if (money < 0)
     multiply_out_decimals
     combinations_array
@@ -30,7 +34,7 @@ class Teller
         decimal_point += 1
         denomination_minimum *= 10
       end
-      self.denomination.map! { |item| item  *(10 ** decimal_point)}
+      self.denomination.map! { |item| item  * (10 ** decimal_point)}
       self.money *= (10 ** decimal_point)
       self.multiplier_used = true
     end
@@ -60,7 +64,7 @@ class Teller
     self.result = []
     while money_left > 0 do
       array1 = combinations[money_left]
-      result << money_left - array1
+      self.result << money_left - array1
       self.money_left = array1
     end
   end
