@@ -1,59 +1,83 @@
-require 'byebug'
-
 class Teller
+  attr_accessor :denomination, :money, :money_left, :multiplier_used, :combinations, :result,
+
+  def initialize
+    self.denomination = []
+    self.money = 0
+    self.money_left = 0
+    self.multiplier_used = false
+    self.combinations = []
+    self.result = []
+  end
+
   def make_change(money, denomination = [])
-    multiplier_used = false
-
+    money_left = money
     fail(StandardError, 'Money cannot be less that 0') if (money < 0)
+    multiply_out_decimals
+    combinations_array
+    results_array
+    divide_back_to_decimals
+    display_results
+  end
 
-#    if (denomination.min <= 0)
-#      puts 'negative denominations values have been removed'
-#      denomination.delete_if { |coin| coin <= 0}
-#    end
+  private
 
+  def multiply_out_decimals
     if denomination.min < 1
       decimal_point = 0
       denomination_minimum = denomination.min
-      while(denomination_minimum != denomination_minimum.to_i)
+      while(denomination.min != denomination.min.to_i)
         decimal_point += 1
         denomination_minimum *= 10
       end
-      denomination.map! { |item| item  *(10 ** decimal_point)}
-      money *= (10 ** decimal_point)
-      multiplier_used = true
+      self.denomination.map! { |item| item  *(10 ** decimal_point)}
+      self.money *= (10 ** decimal_point)
+      self.multiplier_used = true
     end
-
     fail(StandardError, 'Total must be a multiple of smaller denomination') if (money % denomination.min != 0)
+  end
 
-    combinations = [money + 1]
+
+  def combinations_array
+    self.combinations = [money + 1]
     work = [[0, 0]]
+
     while combinations[money].nil? && !work.empty? do
       base, starting_index = work.shift
       starting_index.upto(denomination.size - 1) do |index|
         coin = denomination[index]
         total = base + coin
         if total <= money && combinations[total].nil?
-          combinations[total] = base
+          self.combinations[total] = base
           work << [total, index]
         end
       end
     end
-    money_left = money
+  end
+
+  def results_array
     return nil if combinations[money].nil?
-    result = []
+    self.result = []
     while money_left > 0 do
       array1 = combinations[money_left]
       result << money_left - array1
-      money_left = array1
+      self.money_left = array1
     end
+  end
 
+  def divide_back_to_decimals
     if multiplier_used == true
-      result.map! { |item| item /(10 ** decimal_point)}
+      self.result.map! { |item| item /(10 ** decimal_point)}
     end
+  end
 
+  def display_results
     puts "change from #{money}:"
     puts "#{result}"
   end
+
 end
 
 coins = Teller.new
+
+coins.make_change(14, [10, 7, 1])
