@@ -1,11 +1,38 @@
+# frozen_string_literal: true
+
 require_relative 'setup'
-require_relative 'change'
-require_relative 'results'
+require_relative 'teller'
+require_relative 'result'
 
-setup = Setup.new
-total_change = setup.get_total_change
-denomination = setup.get_denomination
+class Super
+  def self.call
+    new.send(:call)
+  end
 
-teller = Teller.new.make_change(money: total_change, denomination: denomination)
+  def setup
+    @setup ||= Setup.new
+  end
 
-results = Results.new(total_change: total_change, denominations: denomination, change: teller).display_results
+  def call
+    Result.display_results(
+      total_change: total_change,
+      denominations: denominations,
+      change: change
+    )
+  end
+
+  def total_change
+    @total_change ||= setup.get_total_change
+  end
+
+  def denominations
+    @denominations ||= setup.get_denomination
+  end
+
+  def change
+    @change ||= Teller.make_change(
+      money: total_change,
+      denomination: denominations
+    )
+  end
+end

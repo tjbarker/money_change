@@ -1,11 +1,11 @@
 class Setup
+  class IncorrectTotalError < StandardError; end
   attr_accessor :i, :denominations, :response
-
 
   def get_total_change
     puts 'what is the total change to be given?'
     gets.chomp.to_i.tap do |total_change|
-      fail(StandardError, 'Total change must be greater than zero') unless (total_change > 0)
+      fail(IncorrectTotalError, 'Total change must be greater than zero') unless (total_change > 0)
     end
   end
 
